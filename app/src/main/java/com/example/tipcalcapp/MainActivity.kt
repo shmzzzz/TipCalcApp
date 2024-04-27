@@ -28,6 +28,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -131,6 +132,9 @@ fun BillForm(
         mutableIntStateOf(1)
     }
     val range = IntRange(start = 1, endInclusive = 100)
+    val tipAmountState = remember {
+        mutableDoubleStateOf(0.0)
+    }
 
     Surface(
         modifier = Modifier
@@ -207,7 +211,7 @@ fun BillForm(
                 )
                 Spacer(modifier = Modifier.width(150.dp))
                 Text(
-                    text = "$33.00",
+                    text = "$ ${tipAmountState.doubleValue}",
                     modifier = Modifier.align(alignment = Alignment.CenterVertically)
                 )
             }
@@ -228,9 +232,13 @@ fun BillForm(
                     value = sliderPositionState.floatValue,
                     onValueChange = { newVal ->
                         sliderPositionState.floatValue = newVal
+                        tipAmountState.doubleValue =
+                            calculateTotalTip(
+                                totalBill = totalBillState.value.toDouble(),
+                                tipPercentage = (newVal * 100).toInt()
+                            )
                     },
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                    steps = 5,
                 )
             }
 
@@ -240,6 +248,11 @@ fun BillForm(
         }
     }
 
+}
+
+fun calculateTotalTip(totalBill: Double, tipPercentage: Int): Double {
+    return if (totalBill > 1 && totalBill.toString().isNotEmpty())
+        (totalBill * tipPercentage) / 100 else 0.0
 }
 
 @Preview(showBackground = true)
