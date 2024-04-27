@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tipcalcapp.components.InputField
 import com.example.tipcalcapp.ui.theme.TipCalcAppTheme
+import com.example.tipcalcapp.util.calculateTotalPerPerson
 import com.example.tipcalcapp.util.calculateTotalTip
 import com.example.tipcalcapp.widgets.RoundIconButton
 
@@ -53,7 +54,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             TipCalcAppTheme {
                 MyApp {
-                    TopHeader()
                     MainContent()
                 }
             }
@@ -136,6 +136,11 @@ fun BillForm(
     val tipAmountState = remember {
         mutableDoubleStateOf(0.0)
     }
+    val totalPerPersonState = remember {
+        mutableDoubleStateOf(0.0)
+    }
+
+    TopHeader(totalPerPerson = totalPerPersonState.doubleValue)
 
     Surface(
         modifier = Modifier
@@ -182,6 +187,11 @@ fun BillForm(
                             splitByState.intValue =
                                 if (splitByState.intValue > range.first) splitByState.intValue - 1
                                 else range.first
+                            totalPerPersonState.doubleValue = calculateTotalPerPerson(
+                                totalBill = totalBillState.value.toDouble(),
+                                splitBy = splitByState.intValue,
+                                tipPercentage = (sliderPositionState.floatValue * 100).toInt(),
+                            )
                         }
                     )
                     Text(
@@ -196,6 +206,11 @@ fun BillForm(
                             splitByState.intValue =
                                 if (splitByState.intValue < range.last) splitByState.intValue + 1
                                 else range.last
+                            totalPerPersonState.doubleValue = calculateTotalPerPerson(
+                                totalBill = totalBillState.value.toDouble(),
+                                splitBy = splitByState.intValue,
+                                tipPercentage = (sliderPositionState.floatValue * 100).toInt(),
+                            )
                         }
                     )
                 }
@@ -238,6 +253,11 @@ fun BillForm(
                                 totalBill = totalBillState.value.toDouble(),
                                 tipPercentage = (newVal * 100).toInt()
                             )
+                        totalPerPersonState.doubleValue = calculateTotalPerPerson(
+                            totalBill = totalBillState.value.toDouble(),
+                            splitBy = splitByState.intValue,
+                            tipPercentage = (sliderPositionState.floatValue * 100).toInt(),
+                        )
                     },
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                 )
