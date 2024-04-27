@@ -29,6 +29,8 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableDoubleState
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -108,16 +110,37 @@ fun TopHeader(totalPerPerson: Double = 0.0) {
 @Preview
 @Composable
 fun MainContent() {
-    BillForm() { billAmt ->
-        Log.d("AMT", "MainContent: $billAmt")
+
+    val splitByState = remember {
+        mutableIntStateOf(1)
+    }
+    val tipAmountState = remember {
+        mutableDoubleStateOf(0.0)
+    }
+    val totalPerPersonState = remember {
+        mutableDoubleStateOf(0.0)
+    }
+    Column(modifier = Modifier.padding(all = 12.dp)) {
+        BillForm(
+            splitByState = splitByState,
+            tipAmountState = tipAmountState,
+            totalPerPersonState = totalPerPersonState,
+        ) { billAmt ->
+            Log.d("AMT", "MainContent: $billAmt")
+        }
     }
 }
 
 @Composable
 fun BillForm(
     modifier: Modifier = Modifier,
+    range: IntRange = 1..100,
+    splitByState: MutableIntState,
+    tipAmountState: MutableDoubleState,
+    totalPerPersonState: MutableDoubleState,
     onValChange: (String) -> Unit
 ) {
+    TopHeader(totalPerPerson = totalPerPersonState.doubleValue)
     val totalBillState = remember {
         mutableStateOf("")
     }
@@ -130,18 +153,6 @@ fun BillForm(
         mutableFloatStateOf(0f)
     }
     val tipPercentage = (sliderPositionState.floatValue * 100).toInt()
-    val splitByState = remember {
-        mutableIntStateOf(1)
-    }
-    val range = IntRange(start = 1, endInclusive = 100)
-    val tipAmountState = remember {
-        mutableDoubleStateOf(0.0)
-    }
-    val totalPerPersonState = remember {
-        mutableDoubleStateOf(0.0)
-    }
-
-    TopHeader(totalPerPerson = totalPerPersonState.doubleValue)
 
     Surface(
         modifier = Modifier
@@ -167,20 +178,20 @@ fun BillForm(
                     keyboardController?.hide()
                 }
             )
-            
+
             if (validState) {
                 // Split Row
                 Row(
-                    modifier = Modifier.padding(3.dp),
+                    modifier = modifier.padding(3.dp),
                     horizontalArrangement = Arrangement.Start,
                 ) {
                     Text(
                         text = "Split",
-                        modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                        modifier = modifier.align(alignment = Alignment.CenterVertically)
                     )
-                    Spacer(modifier = Modifier.width(120.dp))
+                    Spacer(modifier = modifier.width(120.dp))
                     Row(
-                        modifier = Modifier.padding(horizontal = 3.dp),
+                        modifier = modifier.padding(horizontal = 3.dp),
                         horizontalArrangement = Arrangement.End,
                     ) {
                         RoundIconButton(
