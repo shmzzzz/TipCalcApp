@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,9 +24,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -74,6 +75,7 @@ fun TopHeader(totalPerPerson: Double = 0.0) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(15.dp)
             .height(height = 150.dp)
             .clip(shape = CircleShape.copy(all = CornerSize(12.dp))),
 //            .clip(shape = RoundedCornerShape(corner = CornerSize(12.dp))),
@@ -120,6 +122,10 @@ fun BillForm(
     }
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    var sliderPositionState = remember {
+        mutableFloatStateOf(0f)
+    }
+
     Surface(
         modifier = Modifier
             .padding(2.dp)
@@ -144,33 +150,79 @@ fun BillForm(
                     keyboardController?.hide()
                 }
             )
-            if (validState) {
+//            if (validState) {
+            // Split Row
+            Row(
+                modifier = Modifier.padding(3.dp),
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                Text(
+                    text = "Split",
+                    modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                )
+                Spacer(modifier = Modifier.width(120.dp))
                 Row(
-                    modifier = Modifier.padding(3.dp),
-                    horizontalArrangement = Arrangement.Start
+                    modifier = Modifier.padding(horizontal = 3.dp),
+                    horizontalArrangement = Arrangement.End,
                 ) {
-                    Text(
-                        text = "Split",
-                        modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                    RoundIconButton(
+                        imageVector = Icons.Default.Remove,
+                        onClick = { Log.d("Icon", "BillForm: Remove") }
                     )
-                    Spacer(modifier = Modifier.width(120.dp))
-                    Row(
-                        modifier = Modifier.padding(horizontal = 3.dp),
-                        horizontalArrangement = Arrangement.End,
-                    ) {
-                        RoundIconButton(
-                            imageVector = Icons.Default.Remove,
-                            onClick = { Log.d("Icon", "BillForm: Remove") }
-                        )
-                        RoundIconButton(
-                            imageVector = Icons.Default.Add,
-                            onClick = { Log.d("Icon", "BillForm: Add") }
-                        )
-                    }
+                    Text(
+                        text = "3",
+                        modifier = Modifier
+                            .align(alignment = Alignment.CenterVertically)
+                            .padding(start = 9.dp, end = 9.dp)
+                    )
+                    RoundIconButton(
+                        imageVector = Icons.Default.Add,
+                        onClick = { Log.d("Icon", "BillForm: Add") }
+                    )
                 }
-            } else {
-                Box() {}
             }
+
+            // Tip Row
+            Row(
+                modifier = Modifier.padding(horizontal = 3.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                Text(
+                    text = "Tip",
+                    modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                )
+                Spacer(modifier = Modifier.width(150.dp))
+                Text(
+                    text = "$33.00",
+                    modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                )
+            }
+
+            // Percentage Row
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 3.dp, vertical = 12.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = sliderPositionState.floatValue.toString())
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Slider
+                Slider(
+                    value = sliderPositionState.floatValue,
+                    onValueChange = { newVal ->
+                        sliderPositionState.floatValue = newVal
+                    },
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                    steps = 5,
+                )
+            }
+
+//            } else {
+//                Box() {}
+//            }
         }
     }
 
