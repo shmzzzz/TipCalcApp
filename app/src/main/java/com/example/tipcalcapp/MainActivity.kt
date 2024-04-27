@@ -29,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -122,9 +123,13 @@ fun BillForm(
     }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    var sliderPositionState = remember {
+    val sliderPositionState = remember {
         mutableFloatStateOf(0f)
     }
+    val splitByState = remember {
+        mutableIntStateOf(1)
+    }
+    val range = IntRange(start = 1, endInclusive = 100)
 
     Surface(
         modifier = Modifier
@@ -167,17 +172,25 @@ fun BillForm(
                 ) {
                     RoundIconButton(
                         imageVector = Icons.Default.Remove,
-                        onClick = { Log.d("Icon", "BillForm: Remove") }
+                        onClick = {
+                            splitByState.intValue =
+                                if (splitByState.intValue > range.first) splitByState.intValue - 1
+                                else range.first
+                        }
                     )
                     Text(
-                        text = "3",
+                        text = splitByState.intValue.toString(),
                         modifier = Modifier
                             .align(alignment = Alignment.CenterVertically)
                             .padding(start = 9.dp, end = 9.dp)
                     )
                     RoundIconButton(
                         imageVector = Icons.Default.Add,
-                        onClick = { Log.d("Icon", "BillForm: Add") }
+                        onClick = {
+                            splitByState.intValue =
+                                if (splitByState.intValue < range.last) splitByState.intValue + 1
+                                else range.last
+                        }
                     )
                 }
             }
