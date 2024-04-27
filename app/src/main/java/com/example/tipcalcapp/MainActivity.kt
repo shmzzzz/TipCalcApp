@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tipcalcapp.components.InputField
 import com.example.tipcalcapp.ui.theme.TipCalcAppTheme
+import com.example.tipcalcapp.util.calculateTotalTip
 import com.example.tipcalcapp.widgets.RoundIconButton
 
 class MainActivity : ComponentActivity() {
@@ -250,10 +251,6 @@ fun BillForm(
 
 }
 
-fun calculateTotalTip(totalBill: Double, tipPercentage: Int): Double {
-    return if (totalBill > 1 && totalBill.toString().isNotEmpty())
-        (totalBill * tipPercentage) / 100 else 0.0
-}
 
 @Preview(showBackground = true)
 @Composable
